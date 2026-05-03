@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Both Countable & Uncountable Nouns</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+–bg: #0f1923;
+–surface: #162130;
+–surface2: #1e2e40;
+–border: #2a3d52;
+–text: #e8edf2;
+–muted: #7a96b0;
+–accent: #4fc3f7;
+–gold: #ffd166;
+–correct: #43e97b;
+–wrong: #ff6b6b;
+–missed: #ffd166;
+}
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘DM Sans’, sans-serif;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 2.5rem 1rem 5rem;
+background-image:
+radial-gradient(ellipse at 15% 0%, rgba(79,195,247,0.07) 0%, transparent 55%),
+radial-gradient(ellipse at 85% 100%, rgba(255,209,102,0.06) 0%, transparent 50%);
+}
+
+header {
+text-align: center;
+margin-bottom: 2.5rem;
+max-width: 620px;
+}
+
+.eyebrow {
+font-size: 0.7rem;
+letter-spacing: 0.22em;
+text-transform: uppercase;
+color: var(–accent);
+font-weight: 600;
+margin-bottom: 0.7rem;
+}
+
+h1 {
+font-family: ‘DM Serif Display’, serif;
+font-size: clamp(1.7rem, 5vw, 2.6rem);
+line-height: 1.15;
+margin-bottom: 1rem;
+color: var(–text);
+}
+
+h1 em {
+font-style: italic;
+color: var(–gold);
+}
+
+.instructions {
+font-size: 0.92rem;
+color: var(–muted);
+line-height: 1.65;
+background: var(–surface);
+border-left: 3px solid var(–accent);
+padding: 0.85rem 1.2rem;
+border-radius: 0 8px 8px 0;
+text-align: left;
+}
+
+.instructions strong { color: var(–text); }
+
+.grid {
+display: flex;
+flex-wrap: wrap;
+gap: 0.6rem;
+justify-content: center;
+max-width: 700px;
+margin-bottom: 2rem;
+}
+
+.word-btn {
+background: var(–surface);
+border: 1.5px solid var(–border);
+border-radius: 9px;
+padding: 0.55rem 1.15rem;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.98rem;
+font-weight: 500;
+color: var(–text);
+cursor: pointer;
+transition: all 0.16s ease;
+box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+user-select: none;
+}
+
+.word-btn:hover:not(:disabled) {
+border-color: var(–accent);
+box-shadow: 0 0 0 3px rgba(79,195,247,0.15);
+transform: translateY(-1px);
+}
+
+.word-btn.selected {
+background: var(–accent);
+border-color: var(–accent);
+color: #0f1923;
+font-weight: 600;
+box-shadow: 0 4px 14px rgba(79,195,247,0.3);
+}
+
+.word-btn.correct {
+background: rgba(67,233,123,0.15);
+border-color: var(–correct);
+color: var(–correct);
+font-weight: 600;
+box-shadow: 0 0 0 2px rgba(67,233,123,0.2);
+}
+
+.word-btn.wrong-selected {
+background: rgba(255,107,107,0.15);
+border-color: var(–wrong);
+color: var(–wrong);
+font-weight: 600;
+}
+
+.word-btn.missed {
+background: rgba(255,209,102,0.08);
+border: 1.5px dashed var(–missed);
+color: var(–missed);
+}
+
+.word-btn:disabled { cursor: default; transform: none !important; }
+
+.actions {
+display: flex;
+gap: 0.8rem;
+flex-wrap: wrap;
+justify-content: center;
+margin-bottom: 1.8rem;
+}
+
+.btn-check {
+background: var(–accent);
+color: #0f1923;
+border: none;
+padding: 0.75rem 2.2rem;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.97rem;
+font-weight: 700;
+border-radius: 9px;
+cursor: pointer;
+letter-spacing: 0.02em;
+transition: all 0.16s;
+box-shadow: 0 4px 14px rgba(79,195,247,0.3);
+}
+.btn-check:hover { background: #81d4fa; transform: translateY(-1px); }
+
+.btn-reset {
+background: transparent;
+color: var(–muted);
+border: 1.5px solid var(–border);
+padding: 0.75rem 1.6rem;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.97rem;
+font-weight: 600;
+border-radius: 9px;
+cursor: pointer;
+transition: all 0.16s;
+}
+.btn-reset:hover { border-color: var(–muted); color: var(–text); transform: translateY(-1px); }
+
+#result {
+max-width: 660px;
+width: 100%;
+animation: fadeUp 0.4s ease;
+}
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.score-box {
+text-align: center;
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 14px;
+padding: 1.4rem;
+margin-bottom: 1.2rem;
+}
+
+.score-big {
+font-family: ‘DM Serif Display’, serif;
+font-size: 2.8rem;
+color: var(–accent);
+}
+
+.score-label { font-size: 0.83rem; color: var(–muted); margin-top: 0.2rem; }
+
+.legend {
+display: flex;
+gap: 1.2rem;
+flex-wrap: wrap;
+font-size: 0.8rem;
+justify-content: center;
+margin-bottom: 1.2rem;
+color: var(–muted);
+}
+
+.legend span { display: flex; align-items: center; gap: 0.4rem; }
+.dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
+.dot-correct { background: var(–correct); }
+.dot-wrong { background: var(–wrong); }
+.dot-missed { background: rgba(255,209,102,0.2); border: 1.5px dashed var(–missed); }
+
+.section-title {
+font-family: ‘DM Serif Display’, serif;
+font-size: 1rem;
+color: var(–muted);
+margin: 1.2rem 0 0.5rem;
+padding-bottom: 0.35rem;
+border-bottom: 1px solid var(–border);
+letter-spacing: 0.01em;
+}
+
+.explain-list { list-style: none; padding: 0; }
+
+.explain-list li {
+padding: 0.55rem 0.5rem;
+border-bottom: 1px solid rgba(42,61,82,0.5);
+display: flex;
+gap: 0.6rem;
+align-items: flex-start;
+font-size: 0.88rem;
+line-height: 1.55;
+}
+
+.explain-list li:last-child { border-bottom: none; }
+
+.tag {
+font-size: 0.68rem;
+font-weight: 700;
+padding: 0.18rem 0.5rem;
+border-radius: 5px;
+white-space: nowrap;
+margin-top: 0.15rem;
+flex-shrink: 0;
+letter-spacing: 0.04em;
+}
+
+.tag-c { background: rgba(67,233,123,0.15); color: var(–correct); }
+.tag-w { background: rgba(255,107,107,0.15); color: var(–wrong); }
+.tag-m { background: rgba(255,209,102,0.12); color: var(–missed); }
+
+.explain-list strong { color: var(–text); }
+
+.examples {
+color: var(–muted);
+font-style: italic;
+font-size: 0.84rem;
+margin-top: 0.2rem;
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Grammar Exercise</div>
+  <h1>Words that are <em>both</em><br>Countable & Uncountable</h1>
+  <p class="instructions">Click all nouns that can be <strong>both countable and uncountable</strong> depending on the context — words that sometimes take "a/an" or a plural, and sometimes don't. Then press <em>Check</em>.</p>
+</header>
+
+<div class="grid" id="grid"></div>
+
+<div class="actions">
+  <button class="btn-check" onclick="checkAnswers()">Check</button>
+  <button class="btn-reset" onclick="resetAll()">Reset</button>
+</div>
+
+<div id="result"></div>
+
+<script>
+// both: true = can be BOTH countable and uncountable
+const words = [
+  {
+    word: "progress",
+    both: false,
+    note: "Only uncountable. You cannot say 'a progress' or 'progresses'.",
+    examples: ""
+  },
+  {
+    word: "bread",
+    both: true,
+    note: "Normally uncountable (substance), but countable when referring to types or varieties.",
+    examples: "Uncountable: 'Would you like some bread?' — Countable: 'The bakery sells three different breads.'"
+  },
+  {
+    word: "air",
+    both: false,
+    note: "Only uncountable in standard everyday use.",
+    examples: ""
+  },
+  {
+    word: "money",
+    both: false,
+    note: "Only uncountable. You cannot say 'a money' or 'moneys' in normal usage.",
+    examples: ""
+  },
+  {
+    word: "vegetables",
+    both: false,
+    note: "Only countable. 'Vegetable' has a clear plural form.",
+    examples: ""
+  },
+  {
+    word: "tomato",
+    both: false,
+    note: "Only countable — a tomato, two tomatoes.",
+    examples: ""
+  },
+  {
+    word: "information",
+    both: false,
+    note: "Only uncountable. Never 'an information' or 'informations'.",
+    examples: ""
+  },
+  {
+    word: "data",
+    both: false,
+    note: "Treated as uncountable in modern everyday English.",
+    examples: ""
+  },
+  {
+    word: "sand",
+    both: true,
+    note: "Uncountable as a mass noun, but countable when referring to types or stretches of sand.",
+    examples: "Uncountable: 'There's sand in my shoes.' — Countable: 'The sands of the Sahara.' / 'Coarse sands and fine sands behave differently.'"
+  },
+  {
+    word: "meat",
+    both: false,
+    note: "Only uncountable as a substance. 'A piece of meat', not 'a meat'.",
+    examples: ""
+  },
+  {
+    word: "leisure",
+    both: false,
+    note: "Only uncountable.",
+    examples: ""
+  },
+  {
+    word: "water",
+    both: true,
+    note: "Uncountable as a liquid, but countable when referring to types, bodies of water, or servings.",
+    examples: "Uncountable: 'Drink more water.' — Countable: 'The waters of the Pacific.' / 'Two waters, please.' (in a restaurant)"
+  },
+  {
+    word: "knowledge",
+    both: false,
+    note: "Only uncountable. No plural form in standard usage.",
+    examples: ""
+  },
+  {
+    word: "tea",
+    both: true,
+    note: "Uncountable as a liquid, but countable when referring to varieties or servings.",
+    examples: "Uncountable: 'I love tea.' — Countable: 'Two teas, please.' / 'They sell herbal teas from around the world.'"
+  },
+  {
+    word: "people",
+    both: false,
+    note: "Countable plural only (of 'person'). Not both.",
+    examples: ""
+  },
+  {
+    word: "gold",
+    both: true,
+    note: "Uncountable as a material, but countable in specific contexts like medals or shades.",
+    examples: "Uncountable: 'The ring is made of gold.' — Countable: 'She won three golds at the Olympics.' / 'The autumn golds of the forest.'"
+  },
+  {
+    word: "rooms",
+    both: false,
+    note: "Only countable — a room, two rooms.",
+    examples: ""
+  },
+  {
+    word: "news",
+    both: false,
+    note: "Only uncountable. 'The news is good', never 'a news'.",
+    examples: ""
+  },
+  {
+    word: "wine",
+    both: true,
+    note: "Uncountable as a liquid, but countable when referring to types or servings.",
+    examples: "Uncountable: 'Wine is produced here.' — Countable: 'This restaurant offers fifty wines.' / 'I'll have a wine.'"
+  },
+  {
+    word: "hair",
+    both: true,
+    note: "Uncountable as a mass ('beautiful hair'), but countable for individual strands.",
+    examples: "Uncountable: 'Her hair is long.' — Countable: 'There's a hair in my soup.'"
+  },
+  {
+    word: "car",
+    both: false,
+    note: "Only countable — a car, two cars.",
+    examples: ""
+  },
+  {
+    word: "business",
+    both: true,
+    note: "Uncountable when meaning commerce/work in general; countable when meaning a company.",
+    examples: "Uncountable: 'Business is slow this month.' — Countable: 'She runs a small business.' / 'Many businesses closed.'"
+  },
+  {
+    word: "sugar",
+    both: true,
+    note: "Uncountable as a substance, but countable when referring to types or chemical compounds.",
+    examples: "Uncountable: 'Add some sugar.' — Countable: 'Natural sugars are found in fruit.' / 'A sugar (= a spoonful), please.'"
+  },
+  {
+    word: "book",
+    both: false,
+    note: "Only countable — a book, two books.",
+    examples: ""
+  },
+  {
+    word: "furniture",
+    both: false,
+    note: "Only uncountable. 'A piece of furniture', never 'a furniture' or 'furnitures'.",
+    examples: ""
+  },
+  {
+    word: "advice",
+    both: false,
+    note: "Only uncountable. 'A piece of advice', never 'an advice' or 'advices'.",
+    examples: ""
+  },
+  {
+    word: "student",
+    both: false,
+    note: "Only countable — a student, many students.",
+    examples: ""
+  },
+];
+
+const selected = new Set();
+let checked = false;
+
+function buildGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  words.forEach(({ word }) => {
+    const btn = document.createElement('button');
+    btn.className = 'word-btn';
+    btn.textContent = word;
+    btn.id = 'btn-' + word;
+    btn.onclick = () => toggle(word, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function toggle(word, btn) {
+  if (checked) return;
+  if (selected.has(word)) {
+    selected.delete(word);
+    btn.classList.remove('selected');
+  } else {
+    selected.add(word);
+    btn.classList.add('selected');
+  }
+}
+
+function checkAnswers() {
+  checked = true;
+  const answers = words.filter(w => w.both);
+  const answerSet = new Set(answers.map(w => w.word));
+
+  let correct = 0;
+  const details = { correct: [], wrong: [], missed: [] };
+
+  words.forEach(({ word, both, note, examples }) => {
+    const btn = document.getElementById('btn-' + word);
+    btn.disabled = true;
+    btn.classList.remove('selected');
+
+    if (both && selected.has(word)) {
+      btn.classList.add('correct');
+      correct++;
+      details.correct.push({ word, note, examples });
+    } else if (!both && selected.has(word)) {
+      btn.classList.add('wrong-selected');
+      details.wrong.push({ word, note, examples });
+    } else if (both && !selected.has(word)) {
+      btn.classList.add('missed');
+      details.missed.push({ word, note, examples });
+    }
+  });
+
+  const total = answers.length;
+
+  let html = `
+    <div class="score-box">
+      <div class="score-big">${correct} / ${total}</div>
+      <div class="score-label">dual-use nouns correctly identified</div>
+    </div>
+    <div class="legend">
+      <span><span class="dot dot-correct"></span> Correct</span>
+      <span><span class="dot dot-wrong"></span> Wrong (not dual-use)</span>
+      <span><span class="dot dot-missed"></span> Missed</span>
+    </div>
+  `;
+
+  function renderList(items, tagClass, tagLabel) {
+    return items.map(({ word, note, examples }) => `
+      <li>
+        <span class="tag ${tagClass}">${tagLabel}</span>
+        <div>
+          <strong>${word}</strong> — ${note}
+          ${examples ? `<div class="examples">${examples}</div>` : ''}
+        </div>
+      </li>
+    `).join('');
+  }
+
+  if (details.correct.length) {
+    html += `<p class="section-title">✓ Correctly selected (${details.correct.length})</p><ul class="explain-list">${renderList(details.correct, 'tag-c', '✓ BOTH')}</ul>`;
+  }
+  if (details.wrong.length) {
+    html += `<p class="section-title">✗ Wrongly selected — not dual-use (${details.wrong.length})</p><ul class="explain-list">${renderList(details.wrong, 'tag-w', '✗')}</ul>`;
+  }
+  if (details.missed.length) {
+    html += `<p class="section-title">⚠ Missed dual-use nouns (${details.missed.length})</p><ul class="explain-list">${renderList(details.missed, 'tag-m', '? BOTH')}</ul>`;
+  }
+
+  document.getElementById('result').innerHTML = html;
+}
+
+function resetAll() {
+  selected.clear();
+  checked = false;
+  document.getElementById('result').innerHTML = '';
+  buildGrid();
+}
+
+buildGrid();
+</script>
+
+</body>
+</html>
